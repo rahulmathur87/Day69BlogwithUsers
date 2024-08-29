@@ -54,18 +54,31 @@ class BlogPost(db.Model):
     subtitle: Mapped[str] = mapped_column(String(250), nullable=False)
     date: Mapped[str] = mapped_column(String(250), nullable=False)
     body: Mapped[str] = mapped_column(Text, nullable=False)
-    author_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("user.id"))
+    author_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
     author = relationship("User", back_populates="posts")
+    comments = relationship("Comment", back_populates="post")
     img_url: Mapped[str] = mapped_column(String(250), nullable=False)
 
 
 # TODO: Create a User table for all your registered users. 
 class User(db.Model, UserMixin):
+    __tablename__ = "users"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, unique=True)
     name: Mapped[str] = mapped_column(String(250), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String(250), nullable=False)
     password: Mapped[str] = mapped_column(String(250), nullable=False)
     posts = relationship("BlogPost", back_populates="author")
+    comments = relationship("Comment", back_populates="commenter")
+
+
+class Comment(db.Model):
+    __tablename__ = "comments"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, unique=True)
+    text: Mapped[str] = mapped_column(String(250), nullable=False)
+    commenter_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("users.id"))
+    commenter = relationship("User", back_populates="comments")
+    post_id: Mapped[int] = mapped_column(Integer, db.ForeignKey("blog_posts.id"))
+    post = relationship("BlogPost", back_populates="comments")
 
 
 with app.app_context():
