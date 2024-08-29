@@ -145,7 +145,7 @@ def get_all_posts():
 @app.route("/post/<int:post_id>", methods=["GET", "POST"])
 def show_post(post_id):
     requested_post = db.get_or_404(BlogPost, post_id)
-    comments = db.session.execute(db.select(Comment)).scalars().all()
+    comments = db.session.execute(db.select(Comment).where(Comment.post_id == post_id)).scalars().all()
     form = CommentForm()
     if form.validate_on_submit():
         if current_user.is_authenticated:
