@@ -76,11 +76,12 @@ def register():
             )
             db.session.add(new_user)
             db.session.commit()
+            login_user(new_user)
             return redirect(url_for('get_all_posts'))
         else:
             flash("Already registered with this email. Try logging in.")
             return redirect(url_for('login'))
-    return render_template("register.html", form=form)
+    return render_template("register.html", form=form, current_user=current_user.is_authenticated)
 
 
 # TODO: Retrieve a user from the database based on their email. 
@@ -100,7 +101,7 @@ def login():
         else:
             flash("User does not exist")
             return redirect(url_for('login'))
-    return render_template("login.html", form=form)
+    return render_template("login.html", form=form, current_user=current_user.is_authenticated)
 
 
 @app.route('/logout')
